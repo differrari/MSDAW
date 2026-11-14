@@ -6,7 +6,6 @@
 #include "math/math.h"
 #include "kbd_helper.h"
 #include "audio/tone.h"
-#define MOUSE_HELPER_NONSTATIC
 #include "mouse_helper.h"
 #include "debug/profiler.h"
 #define MOG_MODULE "MSDAW"
@@ -49,7 +48,9 @@ int main(int argc, char *argv[]){
     
     audio_samples *sample = make_standard_sample();
     
-    sequencer_t *seq = new_sequencer(octave, 12, 5, note_size);
+    sequencer_t *seq = new_sequencer(octave, 12, note_per_bar, note_size);
+    
+    circuit_t *cir = new_circuit(octave, note_per_bar, note_size);
     
     profiler_init();
     
@@ -64,7 +65,8 @@ int main(int argc, char *argv[]){
         mouse_data mouse = {};
         get_mouse_status(&mouse);
         process_mouse(mouse);
-        draw_step_sequencer(&ctx, seq, &mouse);
+        draw_midi(&ctx, &seq->hdr, &mouse);
+        draw_midi(&ctx, &cir->hdr, &mouse);
         
         if (mouse.raw.scroll){
             bpm += 10 * mouse.raw.scroll;

@@ -1,6 +1,5 @@
 # Compile these files against raylib, libc, libm and https://github.com/differrari/redlib/
 # or use using https://github.com/differrari/redbuild/blob/main/Simplemakefile
-input.c
 main.c
 midi.c
 playback.c
