@@ -30,11 +30,11 @@ float zoom = 1;
 float max_zoom = 1;
 float min_zoom = 1;
 float zoom_speed = 1;
-int max_grid = 1;
+int max_grid = 128;
 int min_grid = 1;
 int grid_snap = 1;
 gpu_point pan = {};
-int grid_size = 1;
+int grid_size = 64;
 void (*on_canvas_pan)(gpu_point point) = 0;
 void (*on_canvas_zoom)(float zoom) = 0;
 
@@ -56,9 +56,12 @@ int main(int argc, char *argv[]){
     
     while (!should_close_ctx()){
         
-        update_step(seq, profiler_delta());
+        u64 ms = profiler_delta();
+        
+        update_midi(&cir->hdr, ms);
+        update_midi(&seq->hdr, ms);
 
-        canvas_background(&ctx, 0xFF666999, 0);
+        canvas_background(&ctx, 0xFF666999, 0xff000000);
         
         draw_waveform(&ctx, sample);
         
