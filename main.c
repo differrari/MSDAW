@@ -131,7 +131,6 @@ void update_step(u64 delta){
 }
 
 int main(int argc, char *argv[]){
-    print("Ni hao fine shyt");
     
     request_draw_ctx(&ctx);
     
