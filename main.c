@@ -15,6 +15,8 @@
 #include "playback.h"
 #include "synth.h"
 #include "midi.h"
+#define INFCANVAS_NONSTATIC
+#include "header_utils/infcanvas.h"
 
 int channels = 12;
 
@@ -24,6 +26,18 @@ draw_ctx ctx = {
 };
 
 int octave = 2;
+
+float zoom = 1;
+float max_zoom = 1;
+float min_zoom = 1;
+float zoom_speed = 1;
+int max_grid = 1;
+int min_grid = 1;
+int grid_snap = 1;
+gpu_point pan = {};
+int grid_size = 1;
+void (*on_canvas_pan)(gpu_point point) = 0;
+void (*on_canvas_zoom)(float zoom) = 0;
 
 int main(int argc, char *argv[]){
     
@@ -37,12 +51,13 @@ int main(int argc, char *argv[]){
     
     sequencer_t *seq = new_sequencer(octave, 12, 5, note_size);
     
+    profiler_init();
+    
     while (!should_close_ctx()){
         
         update_step(seq, profiler_delta());
-        
-        kbd_event ev = {};
-        fb_clear(&ctx, 0xFF666999);
+
+        canvas_background(&ctx, 0xFF666999, 0);
         
         draw_waveform(&ctx, sample);
         
@@ -54,8 +69,12 @@ int main(int argc, char *argv[]){
         if (mouse.raw.scroll){
             bpm += 10 * mouse.raw.scroll;
             resync = true;
+            mouse.raw.scroll = 0;
         }
+        
+        canvas_mouse(mouse, profiler_delta()/1000.f);
                 
+        kbd_event ev = {};
         if (read_event(&ev)){
             if (handle_modifier(&ev)) continue;
             if (ev.type == KEY_PRESS){

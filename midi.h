@@ -9,6 +9,7 @@ extern int midi_notes[];
 int get_note(int key);
 
 typedef struct {
+    gpu_point render_loc;
     bool *sequences;
     int current_step;
     int channels;

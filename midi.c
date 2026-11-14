@@ -11,6 +11,8 @@
 #include "mouse_helper.h"
 #include "alloc/alloc.h"
 #include "math/math.h"
+#define INFCANVAS_NONSTATIC
+#include "header_utils/infcanvas.h"
 
 int midi_notes[] = {
     KEY_A,
@@ -47,18 +49,18 @@ void realloc_sequencer(sequencer_t *s){
     s->current_step = -1;
 }
 
-const int grid_size = 50;
-const int grid_idist = 5;
-const int grid_odist = 10;
-const int grid_margin = 10;
+static const int seq_grid_size = 50;
+static const int seq_grid_idist = 5;
+static const int seq_grid_odist = 10;
+static const int seq_grid_margin = 10;
 int current_step = -1;
 
 void draw_step_sequencer(draw_ctx *ctx, sequencer_t *sequencer, mouse_data *mouse){
-    gpu_point p = {20-grid_margin,100};
-    fb_fill_rect(ctx, p.x, p.y, (sequencer->notes_per_bar*sequencer->note_size*(grid_size+grid_idist))-grid_idist+((sequencer->notes_per_bar-1)*grid_odist)+(grid_margin*2), 50 + ((grid_size + grid_idist) * sequencer->channels) + grid_margin, 0xFF676767);
+    gpu_point p = {pan.x+sequencer->render_loc.x+20-seq_grid_margin,pan.y+sequencer->render_loc.y+100};
+    fb_fill_rect(ctx, p.x, p.y, (sequencer->notes_per_bar*sequencer->note_size*(seq_grid_size+seq_grid_idist))-seq_grid_idist+((sequencer->notes_per_bar-1)*seq_grid_odist)+(seq_grid_margin*2), 50 + ((seq_grid_size + seq_grid_idist) * sequencer->channels) + seq_grid_margin, 0xFF676767);
     buffer buf = buffer_create(0x256, buffer_can_grow);
     
-    p.x += 20 + grid_margin;
+    p.x += 20 + seq_grid_margin;
     p.y += 5;
     
     gpu_size s = {};
@@ -97,7 +99,7 @@ void draw_step_sequencer(draw_ctx *ctx, sequencer_t *sequencer, mouse_data *mous
             int x_int = x % sequencer->note_size;
             int index = (y*sequencer->note_size*sequencer->notes_per_bar) + x;
             gpu_rect r = {
-                20 + (x_sec * ((sequencer->note_size*(grid_size + grid_idist))+grid_odist)) + (x_int*(grid_size + grid_idist)), 150 + (y * (grid_size + grid_idist)), grid_size, grid_size
+                pan.x + 20 + (x_sec * ((sequencer->note_size*(seq_grid_size + seq_grid_idist))+seq_grid_odist)) + (x_int*(seq_grid_size + seq_grid_idist)), pan.y + 150 + (y * (seq_grid_size + seq_grid_idist)), seq_grid_size, seq_grid_size
             };
             if (click_status == click_start && mouse_in_rect(r, mouse->position)){
                 sequencer->sequences[index] = !sequencer->sequences[index];
