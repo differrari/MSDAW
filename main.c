@@ -35,7 +35,7 @@ int main(int argc, char *argv[]){
     
     audio_samples *sample = make_standard_sample();
     
-    sequencer_t *seq = new_sequencer(octave, 12, note_per_bar, note_size);
+    sequencer_t *seq = new_sequencer(octave, 12, 5, note_size);
     
     while (!should_close_ctx()){
         
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]){
         mouse_data mouse = {};
         get_mouse_status(&mouse);
         process_mouse(mouse);
-        draw_step_sequencer(&ctx, seq, mouse);
+        draw_step_sequencer(&ctx, seq, &mouse);
         
         if (mouse.raw.scroll){
             bpm += 10 * mouse.raw.scroll;
